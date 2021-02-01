@@ -15,6 +15,6 @@
     "protobufjs": "^6.9.0"
   },
   "dependencies": {
-    "google-protobuf": "^3.12.2"
+    "google-protobuf": "^3.14.0"
   }
 }
