@@ -2,14 +2,14 @@
  * myzulipdb -- IdDB for deployer with zulip tables
  */
 new
-deployId, //(`rho:rchain:deployId`),
-deployerId, //(`rho:rchain:deployerId`),
+deployId(`rho:rchain:deployId`),
+deployerId(`rho:rchain:deployerId`),
 lookup(`rho:registry:lookup`),
 insertArbitrary(`rho:registry:insertArbitrary`),
 IdDBCh,
 log(`rho:io:stderr`)
 in {
-    lookup!(`rho:id:FIXME` /* ISSUE: how to sync IdDB registry URI? */, *IdDBCh) |
+    lookup!(`__ID_DB_URI__`, *IdDBCh) |
     for (IdDB <- IdDBCh) {
         log!({"IdDB": *IdDB}) |
         new dbCh in {

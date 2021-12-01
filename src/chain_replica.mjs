@@ -1,17 +1,15 @@
-/* global Buffer */
-
-import fs from 'fs';  // ISSUE: AMBIENT
+// Reference to TypeScript definitions for IntelliSense in VSCode
+/// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
 
 import postgres from 'postgres';  // ISSUE: AMBIENT
 import grpcLib from '@grpc/grpc-js'; //@@ AMBIENT
 
-import rnode_grpc_js from '@tgrospic/rnode-grpc-js';
-// requires --experimental-json-modules
-import protoSchema from '../rchain-proto/rnode-grpc-gen/js/pbjs_generated.json';
-import '../rchain-proto/rnode-grpc-gen/js/DeployServiceV1_pb.js'; // proto global
+// RNode with environment parameters
+import { rnodeService } from './rnode-env.mjs';
 
-const { signDeploy, rnodeDeploy, getAddrFromPrivateKey } = rnode_grpc_js;
-
+// Load .env file
+import { config } from 'dotenv';
+config();
 
 const harden = x => Object.freeze(x);  // ISSUE: @agoric/harden for deep-freeze?
 
@@ -20,7 +18,7 @@ const zulip_db_config = {
     port: 5432,
     database: 'zulip',
     username: 'zulip',
-    password: 'REPLACE_WITH_SECURE_POSTGRES_PASSWORD',
+    password: process.env.POSTGRES_PASSWORD,
 };
 
 const zulip_ephemera = [
@@ -29,67 +27,35 @@ const zulip_ephemera = [
   'zerver_useractivity', 'zerver_useractivityinterval', 'zerver_userpresence',
 ];
 
+async function main(argv, env, { timer, postgres, grpcLib }) {
+  const [_node, _script] = argv;
 
-async function main(argv, env, { timer, fsp, postgres, grpcLib }) {
-  const [_node, _script, filename] = argv;
-
+  // Postgres connection
   const sql = postgres(zulip_db_config);
+
+  // RNode connection
+  const { sendDeploy, proposeBlock } = rnodeService(env, grpcLib);
 
   const channel = 'mirror';
   await prepare_to_listen(sql, channel);
 
-  let dest;
-  if (env.RNODE && env.SECRET_KEY) {
-    const deployService = rnodeDeploy({ grpcLib, host: env.RNODE || '127.0.0.1:40401', protoSchema });
-    const secretKey = Buffer.from(env.SECRET_KEY, 'hex');
-    const validafterblocknumber = parseInt(env.BLOCKNUM) || -1;  // TODO: warn if missing?
-    const phlolimit = 10e7;
-    console.log({ validafterblocknumber, phlolimit });
-    dest = chain_dest(secretKey, deployService, { validafterblocknumber, phlolimit });
-  } else {
-    if (!filename) {
-      throw new Error('need file arg or RNODE and SECRET_KEY env variables');
-    }
-    const out = await fsp.open(filename, 'w');
-    dest = file_spool(out);
-  }
+  const dest = chain_dest({sendDeploy, proposeBlock});
   const queue = batchingQueue({ max_qty: 64, quiesce_time: 4 * 1000 }, timer, dest);
 
   mirror_events(sql, channel, queue);
 }
 
-function chain_dest(secretKey, deployService, { validafterblocknumber, phlolimit }) {
-  const keyInfo = getAddrFromPrivateKey(secretKey.toString('hex'));
-  console.log({deployKey: keyInfo.pubKey, eth: keyInfo.ethAddr });
-
-  return async (terms) => {
+function chain_dest({sendDeploy, proposeBlock}) {
+  return async terms => {
     const term = terms.join('\n|\n');
-    const deployData = {
-      term,
-      phloprice: 1,  // TODO: when rchain economics evolve
-      phlolimit,
-      validafterblocknumber,  // ISSUE: should get updated over time
-    };
-    const signed = signDeploy(secretKey, deployData);
-    console.log({ timestamp: signed.timestamp, terms: terms.length });
-    const result = await deployService.doDeploy(signed);
-    console.log({ deployResponse: result });
-  };
-}
 
-function file_spool(out) {
-  let first = true;
-  return (terms) => {
-    console.log('spooling', terms.length);
-    for (const rho of terms) {
-      if (first) {
-        first = false;
-      } else {
-        out.write('|\n');
-      }
-      out.write(rho);
-      out.write('\n');
-    }
+    // Send deploy
+    const {response: deployResponse, sig} = await sendDeploy({term});
+    console.log({ deployResponse });
+
+    // Propose block
+    const proposeResponse = await proposeBlock();
+    console.log({ proposeResponse });
   };
 }
 
@@ -207,7 +173,6 @@ function batchingQueue(
 
   return harden({
     push: (item) => {
-      let due = false;
       const t = current_timestamp();
       buf.push(item);
       if (buf.length >= max_qty) {
@@ -238,9 +203,7 @@ function batchingQueue(
 
 
 /* global process, setTimeout, clearTimeout */
-main(process.argv, process.env, {
-  setTimeout,
-  fsp: fs.promises,
+await main(process.argv, process.env, {
   timer: {
     current_timestamp: () => Date.now(),
     setTimeout,
@@ -248,5 +211,4 @@ main(process.argv, process.env, {
   },
   postgres,
   grpcLib,
-})
-  .catch(err => console.error(err));
+});

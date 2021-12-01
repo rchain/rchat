@@ -2,8 +2,8 @@
  * IdDB - DB with id primary key column in all tables
  */
 new
-deployId, //(`rho:rchain:deployId`),
-deployerId, //(`rho:rchain:deployerId`),
+deployId(`rho:rchain:deployId`),
+deployerId(`rho:rchain:deployerId`),
 insertArbitrary(`rho:registry:insertArbitrary`),
 IdDB,
 log(`rho:io:stderr`)
