@@ -73,3 +73,17 @@ npm run myzulipdb-deploy
 ```sh
 npm start
 ```
+
+## Stop containers and clean data
+
+Stop and remove all containers (data stored on disk will not be touched).
+
+```sh
+npm run dc -- down
+```
+
+Delete all data on disk. `sudo` is needed because RNode uses _root_ user inside the container, so the mounted folder will be owned by _root_. 
+
+```sh
+sudo rm -R data
+```
