@@ -56,7 +56,7 @@ This step is necessary to execute only once when RChain nodes are started from a
 
 Creates a main contract with operations to insert DB data on-chain.
 
-**It will produce URI output which must be updated in [**.env**](.env) file.**
+**Result of these deploys will produce URI output which must be updated in [**.env**](.env) file.**
 
 ```sh
 npm run iddb-deploy
@@ -67,6 +67,10 @@ After __.env__ file is updated with __IDDB_CONTRACT_URI__ execute command to cre
 ```sh
 npm run myzulipdb-deploy
 ```
+
+Update __DB_CONTRACT_URI__ in __.env__ file which is used as part of private channel for insert operations ([chain_replica.mjs](chain_replica.mjs)) and to get read-only channel for read operations ([read-db.mjs](read-db.mjs)).
+
+_NOTE: Whenever `iddb-deploy` and `myzulipdb-deploy` are deployed again the corresponding record in __.env__ file must be updated._
 
 ## Start JS script to process new messages from Zulip and import on-chain
 

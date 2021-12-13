@@ -44,6 +44,7 @@ async function main(env, {fs, grpcLib}) {
   // Extract registry URI
   const uri = deployResult.payload?.blockinfoList[0]?.postblockdataList[0]?.exprsList[0]?.gUri;
   console.log({uri});
+  console.log(`Copy URI to .env file DB_CONTRACT_URI variable.`);
 };
 
 await main(process.env, {fs, grpcLib});

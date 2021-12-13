@@ -73,9 +73,9 @@ function notice_as_rho({ op, table_name, OLD = undefined, NEW = undefined}) {
   // KLUDGE: replacing null with Nil in string form has false positives
   const lit = val => val ? JSON.stringify(val).replace(/\bnull\b/g, 'Nil') : 'Nil';
 
-  // ISSUE: sync "zulip_iddb4" with myzulipdb.rho
+  // TODO: use DB_CONTRACT_URI from main input args
   return `new deployerId(\`rho:rchain:deployerId\`) in {
-    for(db <<- @{[*deployerId, "zulip_iddb4"]}) {
+    for(db <<- @{[*deployerId, \`${process.env.DB_CONTRACT_URI}\`]}) {
         // ISSUE: Nil return channel: no sync
         db!(${lit(op)}, ${lit(table_name)}, ${lit(OLD)}, ${lit(NEW)}, Nil)
     }
