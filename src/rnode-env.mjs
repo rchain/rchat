@@ -20,18 +20,23 @@ export function rnodeService(env, grpcLib) {
 
   if (!VALIDATOR_BOOT_PRIVATE) throw Error(`Environment parameter not set VALIDATOR_BOOT_PRIVATE, check .env file.`);
 
+  // Validator (boot) node
   const deployService = rnodeDeploy({ grpcLib, host: `${MY_NET_IP}:40401`, protoSchema });
   const proposeService = rnodePropose({ grpcLib, host: `${MY_NET_IP}:40402`, protoSchema });
   const secretKey = VALIDATOR_BOOT_PRIVATE;
   const phloLimit = 10e7;
 
+  // Read-only node
+  const deployServiceRead = rnodeDeploy({ grpcLib, host: `${MY_NET_IP}:40411`, protoSchema });
+
   // Exports
-  const sendDeploy      = makeSendDeploy({deployService, secretKey, phloLimit});
-  const getDeployResult = makeGetDeployResult({deployService})
-  const proposeBlock    = proposeService.propose;
+  const sendDeploy        = makeSendDeploy({deployService, secretKey, phloLimit});
+  const getDeployResult   = makeGetDeployResult({deployService})
+  const exploratoryDeploy = makeExploratoryDeploy({deployService: deployServiceRead})
+  const proposeBlock      = proposeService.propose;
 
   return {
-    sendDeploy, getDeployResult, proposeBlock,
+    sendDeploy, getDeployResult, exploratoryDeploy, proposeBlock,
   }
 }
 
@@ -92,5 +97,20 @@ function makeGetDeployResult({ deployService }) {
     });
 
     return listenData;
+  };
+}
+
+/**
+ * @param {Object} arg
+ * @param {import('@tgrospic/rnode-grpc-js').DeployService} arg.deployService
+ */
+function makeExploratoryDeploy({ deployService }) {
+  /**
+    * @param {Object} arg
+    * @param {string} arg.term Rholang term to execute
+   */
+  return async ({ term }) => {
+    // Get result from exploratory deploy
+    return await deployService.exploratoryDeploy({ term });
   };
 }
