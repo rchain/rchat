@@ -74,7 +74,7 @@ in {
                                             [target, ...rest] => {
                                                 if (keys.contains(target)) {
                                                     for (@record <<- @{[*self, table_name, target]}) {
-                                                        loop!(rest, acc.put(target, record))
+                                                        loop!(rest, acc.set(target, record))
                                                     }
                                                 } else {
                                                     // TODO: warn?
