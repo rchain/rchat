@@ -8,6 +8,7 @@
     "start": "node --version && npm run node-exe src/chain_replica.mjs",
     "myzulipdb-deploy": "npm run node-exe src/myzulipdb-deploy.mjs",
     "iddb-deploy": "npm run node-exe src/iddb-deploy.mjs",
+    "read-db": "npm run node-exe src/read-db.mjs",
     "node-exe": "node --experimental-json-modules",
     "zulip-gen-org-link": "npm run dc -- exec -u zulip zulip /home/zulip/deployments/current/manage.py generate_realm_creation_link",
     "start-docker": "npm run dc -- up -d",
