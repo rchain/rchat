@@ -5,7 +5,8 @@ Show case example how to make chat applications like Zulip decentralized with on
 ## Goal
 
 1. Extract chat messages from Zulip and store it on-chain.
-1. _TODO: Read on-chain messages and import to Zulip_.
+1. Read on-chain tables, keys and messages.
+1. _TODO: Import messages to Zulip_.
 
 ## Install nodejs dependencies
 
