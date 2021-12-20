@@ -1,5 +1,6 @@
 // Reference to TypeScript definitions for IntelliSense in VSCode
 /// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
+// @ts-check
 
 import postgres from 'postgres';  // ISSUE: AMBIENT
 import grpcLib from '@grpc/grpc-js'; //@@ AMBIENT

@@ -1,5 +1,6 @@
 // Reference to TypeScript definitions for IntelliSense in VSCode
 /// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
+// @ts-check
 
 import { signDeploy, rnodeDeploy, rnodePropose, getAddrFromPrivateKey } from '@tgrospic/rnode-grpc-js';
 // requires --experimental-json-modules
@@ -43,6 +44,8 @@ export function rnodeService(env, grpcLib) {
 /**
  * @param {Object} arg
  * @param {import('@tgrospic/rnode-grpc-js').DeployService} arg.deployService
+ * @param {string} arg.secretKey
+ * @param {number} arg.phloLimit
  */
 function makeSendDeploy({ deployService, secretKey, phloLimit }) {
   // Deployer info
@@ -65,6 +68,7 @@ function makeSendDeploy({ deployService, secretKey, phloLimit }) {
       phloprice: 1,  // TODO: when rchain economics evolve
       phlolimit: phloLimit,
       validafterblocknumber,
+      timestamp: Date.now(), // TODO: ambient access, move to input parameter
     };
     // Sign deploy
     const signed = signDeploy(secretKey, deployData);
@@ -87,7 +91,7 @@ function makeSendDeploy({ deployService, secretKey, phloLimit }) {
 function makeGetDeployResult({ deployService }) {
   /**
     * @param {Object} arg
-    * @param {string} arg.sig Deploy signature (ID)
+    * @param {Uint8Array} arg.sig Deploy signature (ID)
    */
   return async ({ sig }) => {
     // Get result from deploy

@@ -1,5 +1,6 @@
 // Reference to TypeScript definitions for IntelliSense in VSCode
 /// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
+// @ts-check
 
 import grpcLib from '@grpc/grpc-js';
 import { promises as fs } from 'fs'
@@ -13,9 +14,10 @@ import { config } from 'dotenv';
 config();
 
 /**
+  * @param {typeof process.env} env
   * @param {object} arg
-  * @param {typeof file} arg.fs
-  * @param {typeof path} arg.path
+  * @param {typeof fs} arg.fs Node file system promises
+  * @param {typeof grpcLib} arg.grpcLib Library '@grpc/grpc-js'
   */
 async function main(env, {fs, grpcLib}) {
   const { IDDB_CONTRACT_URI } = env
