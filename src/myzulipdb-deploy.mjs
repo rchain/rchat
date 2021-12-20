@@ -21,15 +21,15 @@ async function main(env, {fs, grpcLib}) {
   const { IDDB_CONTRACT_URI } = env
   if (!IDDB_CONTRACT_URI) throw Error(`Environment parameter not set IDDB_CONTRACT_URI, check .env file.`);
 
-  // Get content of 'iddb.rho' file
-  const rhoFile = new URL('myzulipdb.rho', import.meta.url);
+  // Get content of 'myzulipdb.rho' file
+  const rhoFile = new URL('rho/myzulipdb.rho', import.meta.url);
   const rhoCodeTemplate = await fs.readFile(rhoFile, 'utf8');
   const rhoCode = rhoCodeTemplate.replace(/__ID_DB_URI__/, IDDB_CONTRACT_URI);
 
   // RNode connection
   const { sendDeploy, getDeployResult, proposeBlock } = rnodeService(env, grpcLib);
 
-  // Send `iddb.rho` deploy
+  // Send `myzulipdb.rho` deploy
   const {response: deployResponse, sig} = await sendDeploy({term: rhoCode});
   console.log({ deployResponse });
 

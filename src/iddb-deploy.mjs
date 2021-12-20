@@ -19,7 +19,7 @@ config();
   */
 async function main(env, {fs, grpcLib}) {
   // Get content of 'iddb.rho' file
-  const rhoFile = new URL('iddb.rho', import.meta.url);
+  const rhoFile = new URL('rho/iddb.rho', import.meta.url);
   const rhoCode = await fs.readFile(rhoFile, 'utf8');
 
   // RNode connection
