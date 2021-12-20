@@ -14,20 +14,23 @@
     "start-docker": "npm run dc -- up -d",
     "dc": "docker-compose -f docker-compose-zulip.yml -f docker-compose.yml",
     "rnode-generate": "rnode-grpc --rnode-version v0.12.4",
-    "postinstall": "npm run rnode-generate"
+    "postinstall": "npm run rnode-generate",
+    "test": "npm run node-exe test/index.mjs"
   },
   "engines": {
     "node": ">=14.4.0"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.4.4",
+    "@tgrospic/rnode-grpc-js": "^0.9.1",
     "dotenv": "^10.0.0",
     "google-protobuf": "^3.19.1",
     "postgres": "^1.0.2"
   },
   "devDependencies": {
-    "@tgrospic/rnode-grpc-js": "^0.8.5",
+    "@types/tape": "^4.13.2",
     "grpc-tools": "^1.11.2",
-    "protobufjs": "^6.11.2"
+    "protobufjs": "^6.11.2",
+    "tape": "^5.3.2"
   }
 }
