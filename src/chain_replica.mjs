@@ -13,13 +13,13 @@ config();
 
 const harden = x => Object.freeze(x);  // ISSUE: @agoric/harden for deep-freeze?
 
-const zulip_db_config = {
+const zulip_db_config = ({password}) => ({
     host: 'localhost',
     port: 5432,
     database: 'zulip',
     username: 'zulip',
-    password: process.env.POSTGRES_PASSWORD,
-};
+    password,
+});
 
 const zulip_ephemera = [
   'django_session',
@@ -31,7 +31,8 @@ async function main(argv, env, { timer, postgres, grpcLib }) {
   const [_node, _script] = argv;
 
   // Postgres connection
-  const sql = postgres(zulip_db_config);
+  const dbOptions = { password: env.POSTGRES_PASSWORD }
+  const sql = postgres(zulip_db_config(dbOptions));
 
   // RNode connection
   const { sendDeploy, proposeBlock } = rnodeService(env, grpcLib);
