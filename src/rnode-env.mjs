@@ -42,10 +42,10 @@ export function rnodeService(env, grpcLib) {
 }
 
 /**
- * @param {Object} arg
- * @param {import('@tgrospic/rnode-grpc-js').DeployService} arg.deployService
- * @param {string} arg.secretKey
- * @param {number} arg.phloLimit
+ * @param {Object} io
+ * @param {import('@tgrospic/rnode-grpc-js').DeployService} io.deployService
+ * @param {string} io.secretKey
+ * @param {number} io.phloLimit
  */
 function makeSendDeploy({ deployService, secretKey, phloLimit }) {
   // Deployer info
@@ -85,8 +85,8 @@ function makeSendDeploy({ deployService, secretKey, phloLimit }) {
 }
 
 /**
- * @param {Object} arg
- * @param {import('@tgrospic/rnode-grpc-js').DeployService} arg.deployService
+ * @param {Object} io
+ * @param {import('@tgrospic/rnode-grpc-js').DeployService} io.deployService
  */
 function makeGetDeployResult({ deployService }) {
   /**
@@ -105,8 +105,8 @@ function makeGetDeployResult({ deployService }) {
 }
 
 /**
- * @param {Object} arg
- * @param {import('@tgrospic/rnode-grpc-js').DeployService} arg.deployService
+ * @param {Object} io
+ * @param {import('@tgrospic/rnode-grpc-js').DeployService} io.deployService
  */
 function makeExploratoryDeploy({ deployService }) {
   /**
