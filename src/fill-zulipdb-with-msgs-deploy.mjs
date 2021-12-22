@@ -2,7 +2,6 @@
 /// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
 
 import grpcLib from '@grpc/grpc-js';
-import { promises as fs } from 'fs'
 import util from 'util';
 
 // RNode with environment parameters
@@ -16,10 +15,9 @@ import postgres from 'postgres';
 
 /**
   * @param {object} arg
-  * @param {typeof file} arg.fs
   * @param {typeof path} arg.path
   */
-async function main(env, {fs, grpcLib}) {
+async function main(env, {grpcLib}) {
   const zulip_db_config = {
     host: 'localhost',
     port: 5432,
@@ -33,6 +31,7 @@ async function main(env, {fs, grpcLib}) {
   // Postgres connection
   const sql = postgres(zulip_db_config);
 
+  // FIXME this function is returning just zerver_message and zerver_usermessage
   function getTables(){
     return `
       new return,
@@ -198,7 +197,9 @@ async function main(env, {fs, grpcLib}) {
 
     if (table == "zerver_usermessage" && insertedIds.length){
       returnIds = false;
-      // updating message_id with new messages ids
+      // updating zerver_usermessage.message_id with new msgs ids after adding them to pg db
+      //TODO if onchain returns more than current tables
+      // we should consider updating zerver_usermessage first and then the rest of tables that depends on it
       for (let i = 0; i < tableData.length; i++){
         tableData[i].message_id = insertedIds[i].id;
       }

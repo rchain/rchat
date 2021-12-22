@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node --version && npm run node-exe src/chain_replica.mjs",
     "myzulipdb-deploy": "npm run node-exe src/myzulipdb-deploy.mjs",
+    "fill-zulipdb": "npm run node-exe src/fill-zulipdb-with-msgs-deploy.mjs",
     "iddb-deploy": "npm run node-exe src/iddb-deploy.mjs",
     "read-db": "npm run node-exe src/read-db.mjs",
     "node-exe": "node --experimental-json-modules",
