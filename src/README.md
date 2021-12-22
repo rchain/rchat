@@ -1,3 +1,5 @@
+## !! THIS DOCUMENTATION IS NOT UP TO DATE WITH THE CODE, SEE ROOT README FILE !!
+
 # rchat: RChain replica of Zulip governance discussion
 
 Using a largely unmodified zulip installation, we listen to
