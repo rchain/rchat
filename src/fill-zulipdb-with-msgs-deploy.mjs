@@ -2,6 +2,7 @@
 /// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
 
 import grpcLib from '@grpc/grpc-js';
+import { rhoParToJson } from '@tgrospic/rnode-grpc-js';
 import util from 'util';
 
 // RNode with environment parameters
@@ -20,7 +21,7 @@ import postgres from 'postgres';
 async function main(env, {grpcLib}) {
   const zulip_db_config = {
     host: 'localhost',
-    port: 5432,
+    port: 5442,
     database: 'zulip',
     username: 'zulip',
     password: process.env.POSTGRES_PASSWORD,
@@ -86,60 +87,33 @@ async function main(env, {grpcLib}) {
     `;
   }
 
-  //TODO does exist a library that could make me avoid this messy code to extract data?
   function getTablesNames(result) {
-    const tables = [];
-    const exprsList = result.postblockdataList[0]?.exprsList;
-    if (exprsList){
-      const objList = exprsList[0]?.eTupleBody.psList;
-      for (let obj of objList) {
-        let body = obj.exprsList[0]?.eSetBody;
-        if (body) {
-          for (let list of body.psList) {
-            let setBody = list.exprsList[0]?.gString;
-            tables.push(setBody);
-          }
-        }
-      }
-    }
-    return tables;
-  }  
+    const par = result.postblockdataList[0];
+    const rhoResult = rhoParToJson(par);
+    return rhoResult[1];
+  }
   
-  function getKeysFromAST(result) {
-    const msgKeys = []
-    const exprsList = result.postblockdataList[0]?.exprsList;
-    const objList = exprsList.length > 0 ? exprsList[0]?.eTupleBody.psList : [];
-    for (let obj of objList) {
-      let body = obj.exprsList[0]?.eTupleBody;
-      if (body) {
-        for (let list of body.psList) {
-          let setBody = list.exprsList[0]?.eSetBody;
-          if (setBody) {
-            for (let el of setBody.psList) {
-              msgKeys.push(el.exprsList[0].gInt);
-            }
-          }
-        }
-      }
-    }
-    return msgKeys;
+  function getKeys(result) {
+    const par = result.postblockdataList[0];
+    const rhoResult = rhoParToJson(par);
+    return rhoResult[1][1];
   }
 
   function getDatafromAST(dataList){
     let messages = [];
     for (let msgData of dataList){
-      let tupleBody = msgData.exprsList[0]?.eTupleBody;
+      let tupleBody = msgData.exprsList[0]?.eTupleBody;  
       if (tupleBody != undefined){
         for (let list of tupleBody.psList){
           if (list.exprsList[0]?.eMapBody != undefined){
             let dataList = list.exprsList[0]?.eMapBody.kvsList;
             for (let data of dataList){
-              let mapBody = data.value.exprsList[0]?.eMapBody;
+              let mapBody = data.value.exprsList[0]?.eMapBody;        
               if (mapBody != undefined){
                 let msg = {};
                 msg["id"] = data.key.exprsList[0]?.gInt;
             
-                for (let dictEl of mapBody.kvsList){
+                for (let dictEl of mapBody.kvsList){    
                   if (dictEl.value){
                     let key = dictEl.key.exprsList[0]?.gString;
                     let valueSt = dictEl.value.exprsList[0]?.gString;
@@ -183,7 +157,7 @@ async function main(env, {grpcLib}) {
     let returnIds = false;
     // Get ids for tables
     let {result} = await exploratoryDeploy({term: getTableKeys(table)});
-    const recordKeys = getKeysFromAST(result);
+    const recordKeys = getKeys(result);
 
     // Get data by ids
     let {result: resultRecords} = await exploratoryDeploy({term: getRecordInDB(table, recordKeys)});
