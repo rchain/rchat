@@ -6,7 +6,7 @@ Show case example how to make chat applications like Zulip decentralized with on
 
 1. Extract chat messages from Zulip and store it on-chain.
 1. Read on-chain tables, keys and messages.
-1. _TODO: Import messages to Zulip_.
+1. Import messages to Zulip.
 
 ## Install nodejs dependencies
 
@@ -78,6 +78,17 @@ _NOTE: Whenever `iddb-deploy` and `myzulipdb-deploy` are deployed again the corr
 ```sh
 npm start
 ```
+
+## Run JS script to import on-chain messages to new Zulip instance
+
+When creating a new instance of Zulip, you can import on-chain messages by running these script. It will copy the data from obtained on-chain tables. 
+
+```sh
+npm run fill-zulipdb
+```
+
+_TODO: At the moment of this change, the function getTables (from on-chain) returns only zerver_message and zerver_usermessage tables, but there are a few more related to zerver_message such as zerver_userprofile. Copying those tables related to zerver_message could be an improvement to what it is done here._
+
 
 ## Stop containers and clean data
 
