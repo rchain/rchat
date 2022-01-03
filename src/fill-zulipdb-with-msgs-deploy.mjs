@@ -15,9 +15,10 @@ config();
 import postgres from 'postgres';
 
 /**
-  * @param {object} arg
-  * @param {typeof path} arg.path
+  * @param {typeof process.env} env
+  * @param {typeof grpcLib} arg.grpcLib Library '@grpc/grpc-js'
   */
+
 async function main(env, {grpcLib}) {
   const zulip_db_config = {
     host: 'localhost',
@@ -188,4 +189,4 @@ async function main(env, {grpcLib}) {
 
 
 
-await main(process.env, {grpcLib, postgres});
+await main(process.env, {grpcLib});
