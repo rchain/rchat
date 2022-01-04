@@ -1,6 +1,7 @@
 // Reference to TypeScript definitions for IntelliSense in VSCode
 /// <reference path="../rnode-grpc-gen/js/rnode-grpc-js.d.ts" />
 
+import postgres from 'postgres'; 
 import grpcLib from '@grpc/grpc-js';
 import { rhoParToJson } from '@tgrospic/rnode-grpc-js';
 import util from 'util';
@@ -12,14 +13,13 @@ import { rnodeService } from './rnode-env.mjs';
 import { config } from 'dotenv';
 config();
 
-import postgres from 'postgres';
-
 /**
   * @param {typeof process.env} env
+  * @param {typeof postgres} postgres
   * @param {typeof grpcLib} arg.grpcLib Library '@grpc/grpc-js'
   */
 
-async function main(env, {grpcLib}) {
+async function main(env, {postgres, grpcLib}) {
   const zulip_db_config = {
     host: 'localhost',
     port: 5442,
@@ -164,7 +164,7 @@ async function main(env, {grpcLib}) {
     let {result: resultRecords} = await exploratoryDeploy({term: getRecordInDB(table, recordKeys)});
     const tableDataList = resultRecords.postblockdataList[0]?.exprsList[0]?.eTupleBody.psList;
     let tableData = getDatafromAST(tableDataList);
-  
+    
     // console.log('RESULT', util.inspect(result, {depth: 100, colors: true}));
     if (table == "zerver_message"){
       returnIds = true;
@@ -189,4 +189,4 @@ async function main(env, {grpcLib}) {
 
 
 
-await main(process.env, {grpcLib});
+await main(process.env, {postgres, grpcLib});
