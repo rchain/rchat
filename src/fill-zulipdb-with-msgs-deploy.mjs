@@ -15,7 +15,8 @@ config();
 
 /**
   * @param {typeof process.env} env
-  * @param {typeof postgres} postgres
+  * @param {arg} arg
+  * @param {typeof postgres} arg.postgres
   * @param {typeof grpcLib} arg.grpcLib Library '@grpc/grpc-js'
   */
 
